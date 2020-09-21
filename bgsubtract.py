@@ -10,7 +10,7 @@ args = parser.parse_args()
 if args.algo == 'MOG2':
     backSub = cv.createBackgroundSubtractorMOG2()
 else:
-    backSub = cv.createBackgroundSubtractorKNN(dist2Threshold=6.0)
+    backSub = cv.createBackgroundSubtractorKNN()
 
 # capture = cv.VideoCapture(cv.samples.findFileOrKeep(args.input))
 # capture = cv.VideoCapture(0)
