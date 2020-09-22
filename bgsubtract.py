@@ -15,7 +15,9 @@ else:
 
 # capture = cv.VideoCapture(cv.samples.findFileOrKeep(args.input))
 # capture = cv.VideoCapture(0)
-capture = cv.VideoCapture('/Users/mansoor.siddiqui/Workspace/drone/data/stanford_dataset/videos/bookstore/video1/video.mov')
+# capture = cv.VideoCapture('/Users/mansoor.siddiqui/Workspace/drone/data/stanford_dataset/videos/bookstore/video1/video.mov')
+capture = cv.VideoCapture(
+    '/Users/mansoor.siddiqui/Workspace/drone/data/stanford_dataset/videos/hyang/video11/video.mov')
 
 if not capture.isOpened:
     print('Unable to open: ' + args.input)
@@ -42,6 +44,7 @@ while True:
     fgMask = cv.erode(fgMask, erosionKernel)
     dilationKernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (20, 20))
     fgMask = cv.dilate(fgMask, dilationKernel)
+    fgMask[fgMask > 0] = 255  # People often seem to get detected as shadows (i.e. 127), so round up to 255
 
     # Update the heatmap
     if heatmap is None:
@@ -56,8 +59,8 @@ while True:
 
     # The heatmap values are float64's. Scale the values appropriately to uint8's to make it suitable for rendering.
     renderedHeatmap = heatmap.copy()
-    if heatmap.max() > 0:
-        renderedHeatmap -= renderedHeatmap.min()
+    renderedHeatmap -= renderedHeatmap.min()
+    if renderedHeatmap.max() > 0:
         renderedHeatmap = 255 * renderedHeatmap / renderedHeatmap.max()
     renderedHeatmap = renderedHeatmap.astype('uint8')
     renderedHeatmap = cv.applyColorMap(renderedHeatmap, cv.COLORMAP_HOT)
