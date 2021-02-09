@@ -121,6 +121,7 @@ def generate_heatmap():
     render_context = _RenderContext(capture_context.capture)
 
     bg_subtractor = cv2.createBackgroundSubtractorMOG2() if config.bg_subtraction_algo == 'MOG2' else cv2.createBackgroundSubtractorKNN()
+    bg = None
     heatmap = None
 
     while not capture_context.is_expired():
@@ -168,6 +169,6 @@ def generate_heatmap():
 
 
 if __name__ == "__main__":
-    heatmap, bg = generate_heatmap()
-    cv2.imwrite('bg.png', bg)
-    cv2.imwrite('heatmap.png', cv2.add(heatmap, bg))
+    generated_heatmap, generated_bg = generate_heatmap()
+    cv2.imwrite('bg.png', generated_bg)
+    cv2.imwrite('heatmap.png', cv2.add(generated_heatmap, generated_bg))
