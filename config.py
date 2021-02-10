@@ -1,10 +1,12 @@
 class SinglePointMissionConfig:
     system_address = "udp://:14540"
     target_altitude_meters = 20
+    target_altitude_timeout_seconds = 30
 
 class MultiPointMissionConfig:
     system_address = "udp://:14540"
     target_altitude_meters = 20
+    target_altitude_timeout_seconds = 30
 
 class HeatmapConfig:
 
