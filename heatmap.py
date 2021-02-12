@@ -5,6 +5,7 @@ import math
 import sys
 import threading
 import time
+import os
 
 import cv2
 import numpy as np
@@ -186,7 +187,25 @@ def generate_heatmap():
 
 if __name__ == "__main__":
     logging.basicConfig(level=config.log_level, format="%(asctime)s [%(levelname)s] %(message)s", handlers=[logging.FileHandler(config.log_file, "a"), logging.StreamHandler(sys.stdout)])
+
+    bg_out_file = 'bg.png'
+    heatmap_out_file = 'heatmap.png'
+
+    if len(sys.argv) > 1:
+        logging.info(f"Overriding config to read video stream from file: {sys.argv[1]}")
+        config.video_capture_mode = 'FILE'
+        config.video_capture_input_filename = sys.argv[1]
+    if len(sys.argv) > 2:
+        logging.info(f"Overriding config to write output video stream from file: {sys.argv[1]}")
+        config.render_to_video = True
+        config.render_video_filename = sys.argv[2]
+        out_dir, out_video_filename = os.path.split(os.path.abspath(sys.argv[2]))
+        out_basename, _ = os.path.splitext(out_video_filename)
+        bg_out_file = os.path.join(out_dir, f'{out_basename}_bg.png')
+        heatmap_out_file = os.path.join(out_dir, f'{out_basename}_heatmap.png')
+
     generated_heatmap, generated_bg = generate_heatmap()
-    logging.info("Saving images: bg.png, heatmap.png")
-    cv2.imwrite('bg.png', generated_bg)
-    cv2.imwrite('heatmap.png', cv2.add(generated_heatmap, generated_bg))
+    
+    logging.info(f"Saving images: {bg_out_file}, {heatmap_out_file}")
+    cv2.imwrite(bg_out_file, generated_bg)
+    cv2.imwrite(heatmap_out_file, cv2.add(generated_heatmap, generated_bg))
