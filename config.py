@@ -1,7 +1,9 @@
+
 class SinglePointMissionConfig:
     system_address = "udp://:14540"
     target_altitude_meters = 20
-    target_altitude_timeout_seconds = 30
+    altitude_error_threshold_meters = 0.5
+    altitude_arrival_timeout_seconds = 30
 
 class MultiPointMissionConfig:
     system_address = "udp://:14540"
@@ -46,7 +48,7 @@ class HeatmapConfig:
     # RENDERING CONFIGS
     ###############################################################################
 
-    render_to_screen = True
+    render_to_screen = False
     render_to_video = True
     render_video_filename = 'output.avi'
     render_video_fps = 5

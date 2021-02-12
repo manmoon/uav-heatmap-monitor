@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import math
+import threading
 import time
 
 import cv2
@@ -90,13 +91,15 @@ class _RenderContext:
 
     def render(self, frame, heatmap):
         frame_with_heatmap = None
-        if config.render_to_screen or config.render_to_video:
+        render_to_screen = config.render_to_screen and threading.current_thread() is threading.main_thread()
+        render_to_video = config.render_to_video and self.output.isOpened()
+        if render_to_screen or render_to_video:
             rendered_heatmap = _scale_heatmap_for_rendering(heatmap)
             frame_with_heatmap = cv2.add(rendered_heatmap, frame)
-        if config.render_to_screen:
+        if render_to_screen:
             cv2.imshow('Frame with heatmap', frame_with_heatmap)
             cv2.waitKey(1)
-        if config.render_to_video and self.output.isOpened():
+        if render_to_video:
             self.output.write(frame_with_heatmap)
 
     def close(self):
