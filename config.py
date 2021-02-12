@@ -1,14 +1,20 @@
 
+import logging
+
 class SinglePointMissionConfig:
     system_address = "udp://:14540"
     target_altitude_meters = 20
     altitude_error_threshold_meters = 0.5
     altitude_arrival_timeout_seconds = 30
+    log_level = logging.DEBUG
+    log_file = 'heatmap_single_point.log'
 
 class MultiPointMissionConfig:
     system_address = "udp://:14540"
     target_altitude_meters = 20
     target_altitude_timeout_seconds = 30
+    log_level = logging.DEBUG
+    log_file = 'heatmap_multi_point.log'
 
 class HeatmapConfig:
 
@@ -52,3 +58,10 @@ class HeatmapConfig:
     render_to_video = True
     render_video_filename = 'output.avi'
     render_video_fps = 5
+
+    ###############################################################################
+    # LOGGING CONFIGS
+    ###############################################################################
+
+    log_level = logging.DEBUG
+    log_file = 'heatmap_generator.log'

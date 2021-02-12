@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import logging
 import math
+import sys
 import threading
 import time
 
@@ -22,20 +24,24 @@ class _CaptureContext:
 
         # Initialize the video stream
         if config.video_capture_mode == 'FILE':
+            logging.info(f"Initializing video stream from file: {config.video_capture_input_filename}")
             self.capture = cv2.VideoCapture(config.video_capture_input_filename)
             self.is_live = False
         elif config.video_capture_mode == 'CAMERA_GSTREAMER':
+            logging.info(f"Initializing live video stream from camera via gstreamer pipeline: {config.video_capture_gstreamer_pipeline}")
             self.capture = cv2.VideoCapture(config.video_capture_gstreamer_pipeline, cv2.CAP_GSTREAMER)
             self.is_live = True
         else:
+            logging.info("Initializing live video stream directly from camera")
             self.capture = cv2.VideoCapture(0)
             self.is_live = True
         if not self.capture.isOpened():
-            print('Unable to open video capture')
+            logging.error("Unable to open video capture")
             raise IOError
 
         # If capturing a live stream, stop capturing after the configured amount of time has passed. If capturing from
         # a video file, stop capturing after hitting the appropriate frame.
+        logging.info(f"Heatmap scan scheduled to last {config.video_capture_time_seconds} for seconds")
         if self.is_live:
             self._cutoff_time_ns = time.time_ns() + 1e9 * config.video_capture_time_seconds
         else:
@@ -51,6 +57,7 @@ class _CaptureContext:
 
     def is_expired(self):
         if not self.capture.isOpened():
+            logging.warning("Video capture is no longer open; signaling to end heatmap scan")
             return True
         if self.is_live:
             return time.time_ns() >= self._cutoff_time_ns
@@ -74,6 +81,7 @@ class _CaptureContext:
 
     def close(self):
         if self.capture.isOpened():
+            logging.info("Closing video capture stream")
             self.capture.release()
 
 
@@ -82,12 +90,13 @@ class _RenderContext:
 
     def __init__(self, capture: cv2.VideoCapture):
         if config.render_to_video:
+            logging.info(f"Writing video output to file: {config.render_video_filename}")
             width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH)) if not config.down_sampling_enabled else config.down_sampling_size[0]
             height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT)) if not config.down_sampling_enabled else config.down_sampling_size[1]
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
             self.output = cv2.VideoWriter(config.render_video_filename, fourcc, config.render_video_fps, (width, height))
             if not self.output.isOpened():
-                print("Unable to open video file for writing: ", config.render_video_filename)
+                logging.warning(f"Unable to open video file for writing: {config.render_video_filename}")
 
     def render(self, frame, heatmap):
         frame_with_heatmap = None
@@ -97,7 +106,7 @@ class _RenderContext:
             rendered_heatmap = _scale_heatmap_for_rendering(heatmap)
             frame_with_heatmap = cv2.add(rendered_heatmap, frame)
         if render_to_screen:
-            cv2.imshow('Frame with heatmap', frame_with_heatmap)
+            cv2.imshow("Frame with heatmap", frame_with_heatmap)
             cv2.waitKey(1)
         if render_to_video:
             self.output.write(frame_with_heatmap)
@@ -120,6 +129,9 @@ def _scale_heatmap_for_rendering(heatmap):
 
 
 def generate_heatmap():
+    config_string = ','.join("%s=%s" % item for item in vars(config).items() if not item[0].endswith('__'))
+    logging.info(f"Starting heatmap generator with config: {config_string}")
+
     capture_context = _CaptureContext()
     render_context = _RenderContext(capture_context.capture)
 
@@ -164,6 +176,7 @@ def generate_heatmap():
         render_context.render(frame, heatmap)
         capture_context.sleep_until_time_to_read()
 
+    logging.info("Done collecting data")
     capture_context.close()
     render_context.close()
 
@@ -172,6 +185,8 @@ def generate_heatmap():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=config.log_level, format="%(asctime)s [%(levelname)s] %(message)s", handlers=[logging.FileHandler(config.log_file, "a"), logging.StreamHandler(sys.stdout)])
     generated_heatmap, generated_bg = generate_heatmap()
+    logging.info("Saving images: bg.png, heatmap.png")
     cv2.imwrite('bg.png', generated_bg)
     cv2.imwrite('heatmap.png', cv2.add(generated_heatmap, generated_bg))
