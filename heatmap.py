@@ -123,7 +123,10 @@ def _scale_heatmap_for_rendering(heatmap):
     rendered_heatmap = heatmap.copy()
     rendered_heatmap -= rendered_heatmap.min()
     if rendered_heatmap.max() > 0:
-        rendered_heatmap = 255 * rendered_heatmap / rendered_heatmap.max()
+        rendered_heatmap = rendered_heatmap / rendered_heatmap.max()
+        rendered_heatmap[rendered_heatmap < config.render_cutoff_percent] = 0
+        rendered_heatmap = (255 - config.render_brighten_threshold) * rendered_heatmap
+        rendered_heatmap[rendered_heatmap > 0] += config.render_brighten_threshold
     rendered_heatmap = rendered_heatmap.astype('uint8')
     rendered_heatmap = cv2.applyColorMap(rendered_heatmap, cv2.COLORMAP_HOT)
     return rendered_heatmap
