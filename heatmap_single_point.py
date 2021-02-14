@@ -12,6 +12,20 @@ from mavsdk import System
 import heatmap as hm
 from config import SinglePointMissionConfig as config
 
+"""
+heatmap_single_point.py
+
+This script launches a drone to a specific altitude, then scans the ground (via
+a connected camera) for a period of time, building a heatmap to identify busy
+pedestrian hotspots on the ground.
+
+The script is intended to be run from a vehicle-based companion computer (e.g.
+NavQ) with a camera oriented down towards the ground. Configurations specific
+to the management of the drone can be found in config.SinglePointMissionConfig.
+Configurations relating to the heatmap generation component of this workflow
+can be found in config.HeatmapGenerator.
+"""
+
 
 async def run():
     drone = System()

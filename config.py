@@ -1,5 +1,5 @@
-
 import logging
+
 
 class SinglePointMissionConfig:
     system_address = "udp://:14540"
@@ -9,14 +9,15 @@ class SinglePointMissionConfig:
     log_level = logging.DEBUG
     log_file = 'heatmap_single_point.log'
 
+
 class MultiPointMissionConfig:
     system_address = "udp://:14540"
     waypoint_stabilization_time_seconds = 2
     log_level = logging.DEBUG
     log_file = 'heatmap_multi_point.log'
 
-class HeatmapConfig:
 
+class HeatmapConfig:
     ###########################################################################
     # VIDEO CAPTURE CONFIGS
     ###########################################################################

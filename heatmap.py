@@ -2,15 +2,29 @@
 
 import logging
 import math
+import os
 import sys
 import threading
 import time
-import os
 
 import cv2
 import numpy as np
 
 from config import HeatmapConfig as config
+
+"""
+heatmap.py
+
+This script reads a video feed from one of 1) a live camera, 2) a gstreamer
+pipeline, or 3) a video file, then generates a heatmap identifying hotspots
+where motion occurs most frequently. This could be used, for example, to
+identify pedestrian hotspots from a stationary, high-altitude camera.
+
+The script can be invoked directly, or can be called indirectly via the
+generate_heatmap() function. The config.HeatmapConfig class provides a rich
+set of configs to support various algorithm options, rendering options, and
+performance-related options (e.g. frame sampling and down-sampling).
+"""
 
 
 class _CaptureContext:
@@ -144,7 +158,6 @@ def generate_heatmap():
     heatmap = None
 
     while not capture_context.is_expired():
-
         success, frame = capture_context.read()
         if not success:
             break

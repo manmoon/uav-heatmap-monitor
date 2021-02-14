@@ -14,6 +14,22 @@ from mavsdk.mission import MissionPlan
 import heatmap as hm
 from config import MultiPointMissionConfig as config
 
+"""
+heatmap_multi_point.py
+
+This script waits for a simple waypoint-based mission plan to be uploaded to
+the drone. Once a valid mission plan is received, it will have the drone follow
+the mission plan. At each waypoint, the script will have the drone pause for a
+period of time during which it will build a heatmap to identify busy pedestrian
+hotspots on the ground.
+
+The script is intended to be run from a vehicle-based companion computer (e.g.
+NavQ) with a camera oriented down towards the ground. Configurations specific
+to the management of the drone can be found in config.MultiPointMissionConfig.
+Configurations relating to the heatmap generation component of this workflow
+can be found in config.HeatmapGenerator.
+"""
+
 
 async def run():
     drone = System()
