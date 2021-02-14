@@ -11,8 +11,7 @@ class SinglePointMissionConfig:
 
 class MultiPointMissionConfig:
     system_address = "udp://:14540"
-    target_altitude_meters = 20
-    target_altitude_timeout_seconds = 30
+    waypoint_stabilization_time_seconds = 2
     log_level = logging.DEBUG
     log_file = 'heatmap_multi_point.log'
 
@@ -24,7 +23,7 @@ class HeatmapConfig:
 
     # Valid values are 'FILE', 'CAMERA_DIRECT', or 'CAMERA_GSTREAMER'
     video_capture_mode = 'FILE'
-    video_capture_time_seconds = 600
+    video_capture_time_seconds = 300
 
     # Set to 0 to read from the default camera
     video_capture_input_filename = '/Users/mansoor.siddiqui/Workspace/drone/data/stanford_dataset/videos/gates5.mov'
