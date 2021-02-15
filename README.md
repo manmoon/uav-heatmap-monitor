@@ -4,7 +4,7 @@
 
 This repo is intended as a submission for [NXP HoverGames Challenge 2](https://www.hackster.io/contests/hovergames2). The goal of this project is to identify pedestrian hotspots in large, public spaces so that, in the context of a pandemic, appropriate social distancing and pedestrian traffic control measures can be put in place.
 
-And what better way to identify hotspots than... heatmaps?!? We took a few videos from the [Stanford Drone Dataset](https://cvgl.stanford.edu/projects/uav_data/), and applied heatmaps to them to illustrate what this looks like. In each image, the left side shows the averaged background (i.e. the scene with pedestrians removed), and the right side shows the generated heatmap applied onto that background.
+And what better way to identify hotspots than... heatmaps?!? We took a few videos from the [Stanford Drone Dataset](https://cvgl.stanford.edu/projects/uav_data/), and applied heatmaps to them to illustrate what this looks like. In each image below, the left side shows the averaged background (i.e. the scene with pedestrians removed), and the right side shows the generated heatmap applied onto that background:
 
 ![deathCircle1.png](img/deathCircle1.png)
 
@@ -17,7 +17,7 @@ In practice, rather than record footage and run this heatmap analysis on it afte
 * `heatmap_single_point.py` - Launches a drone to a specific altitude, scans the ground and builds the heatmap, then returns the drone back down to where it was launched from.
 * `heatmap_multi_point.py` - Waits for a simple waypoint-based mission plan to be uploaded to the drone (via QGroundControl), then launches the drone, generating heatmaps at each of the waypoints.
 
-BothDetails on how to run these scripts can be found below.
+Details on how to run both of these scripts can be found below.
 
 ## Dependencies
 
@@ -49,7 +49,7 @@ The `heatmap_single_point.py` script provides the ability to launch a drone stra
 
 Prior to running, review the configs in `config.py`, in particular those in the `SinglePointMissionConfig` as well as the `HeatmapConfig` classes. Here are some notable config options:
 
-* `system_address` tells the script where it can connect to the drone. If running in a simulator, this will most likely be `"udp://:14540"`. If running on a companion computer that is connected to the drone via a serial port, this value will look more like `"serial:///dev/ttymxc2:50051"`.
+* `system_address` tells the script where it can connect to the drone. If running in a simulator, this will most likely be `"udp://:14540"`. If running on a companion computer that is connected to the drone via a serial port, this value will look something like `"serial:///dev/ttymxc2:50051"`.
 * `render_to_screen` and `render_to_video` should both be set to `False` if running on the drone's companion computer. If testing from a desktop machine, setting them to `True` will render live output and save it to a video file.
 * `video_capture_mode` determines where the input video stream is coming from. It can be set to `'FILE'`, `'CAMERA_DIRECT'`, or `'CAMERA_GSTREAMER'`. See `config.py` for more granular configs relating to each of those three options.
 * `video_capture_time_seconds` specifies how many seconds the drone should hover in the air to capture data and generate a heatmap. Ideally this should be set to a larger value for sparser scenes.
@@ -73,9 +73,9 @@ Connected to mavsdk_server!
 2021-02-14 03:34:30,085 [DEBUG] Got invalid mission; waiting for a valid mission to be uploaded
 ...
 ```
-This will continue until a mission plan is uploaded to the drone via QGroundControl. The Python script uses MAVSDK which doesn't support all types of mission plans, so even after a mission plan is uploaded to the drone, it may be considered invalid. In particular, Takeoff tasks are not supported, so they must be explicitly deleted from the QGroundControl plan prior to upload (see the trash can next to the Takeoff task in the screenshot below). This is certainly counter-intuitive because QGroundControl first requires you to add a Takeoff task before it allows you to add waypoints.
+This will continue until a mission plan is uploaded to the drone via QGroundControl. The Python script uses MAVSDK which doesn't support all types of mission plans, so even after a mission plan is uploaded to the drone, it may be considered invalid. **In particular, Takeoff tasks are not supported, so they must be explicitly deleted from the QGroundControl mission plan prior to upload (see the trash can next to the Takeoff task in the screenshot below).** This is certainly counter-intuitive because QGroundControl first requires you to add a Takeoff task before it allows you to add waypoints.
 ![qgc2.png](img/qgc2.png)
-Once the mission plan is picked up, the script will automatically start kicking off the mission:
+Once the mission plan is picked up, the script will automatically kick off the mission and you're good to go!:
 ```
 2021-02-14 03:49:54,288 [INFO] Waiting for valid mission plan
 2021-02-14 03:49:54,295 [INFO] Successfully retrieved mission plan:
